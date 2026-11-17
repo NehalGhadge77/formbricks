@@ -95,6 +95,16 @@ describe("Users Lib", () => {
       (prisma.$transaction as any).mockResolvedValueOnce([usersArray, usersArray.length]);
       const result = await getUsers("org456", { limit: 10, skip: 0 } as TGetUsersFilter);
       expect(prisma.$transaction).toHaveBeenCalled();
+      expect(prisma.user.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: expect.objectContaining({
+            teamUsers: {
+              where: { team: { organizationId: "org456" } },
+              include: { team: true },
+            },
+          }),
+        })
+      );
       expect(result.ok).toBe(true);
       if (result.ok) {
         expect(result.data.data).toStrictEqual([

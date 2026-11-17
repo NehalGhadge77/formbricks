@@ -32,6 +32,11 @@ export const getUsers = async (
         ...query,
         include: {
           teamUsers: {
+            where: {
+              team: {
+                organizationId,
+              },
+            },
             include: {
               team: true,
             },
